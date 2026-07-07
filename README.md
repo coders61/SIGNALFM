@@ -28,23 +28,14 @@ Built as a single-page application with a modern cyberpunk-inspired interface fe
 
 ---
 
-# 📷 Preview
+# 📷 ScreenShot
+ 
 
-A modern radio experience inspired by vintage receivers combined with futuristic dashboard design.
+ 
 
-Includes:
-
-- Hero landing page
-- Animated tuning dial
-- Country browser
-- Genre filters
-- Live search
-- Favorites
-- Streaming player
-- Audio visualizer
-- Equalizer
-- Mobile responsive interface
-
+<p align="center">
+  <img src="Screenshot.png" width="48%">
+ </p>
 ---
 
 # 🚀 Technologies
