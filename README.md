@@ -6,6 +6,10 @@ A futuristic web radio player that lets you discover and stream live internet ra
 
 Built as a single-page application with a modern cyberpunk-inspired interface featuring animated radio controls, live station discovery, glassmorphism effects, and an integrated streaming player.
 
+
+<p align="center">
+  <img src="Screenshot.png" width="70%">
+</p>
 ---
 
 # ✨ Features
@@ -26,13 +30,6 @@ Built as a single-page application with a modern cyberpunk-inspired interface fe
 - 🌙 Cyberpunk-inspired UI
 - 🚀 No backend required
 
----
-
-# 📷 ScreenShot
- 
-<p align="center">
-  <img src="Screenshot.png" width="70%">
-</p>
 ---
 
 # 🚀 Technologies
