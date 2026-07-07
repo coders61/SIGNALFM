@@ -30,12 +30,9 @@ Built as a single-page application with a modern cyberpunk-inspired interface fe
 
 # 📷 ScreenShot
  
-
- 
-
 <p align="center">
-  <img src="Screenshot.png" width="48%">
- </p>
+  <img src="Screenshot.png" width="100%">
+</p>
 ---
 
 # 🚀 Technologies
