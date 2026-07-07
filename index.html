@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGNAL — Tune the World, Live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#050510;
+    --cyan:#2be8ff;
+    --magenta:#ff3fc0;
+    --violet:#9b6bff;
+    --lime:#c6ff3d;
+    --amber:#ffc233;
+    --coral:#ff6a5c;
+    --teal:#22ffb0;
+    --glass: rgba(255,255,255,0.045);
+    --glass-hover: rgba(255,255,255,0.09);
+    --border: rgba(255,255,255,0.09);
+    --text:#eef1f9;
+    --dim:#8b93aa;
+    --dimmer:#565f78;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:
+      radial-gradient(1100px 650px at 10% -8%, rgba(43,232,255,0.14), transparent 55%),
+      radial-gradient(900px 600px at 95% 5%, rgba(255,63,192,0.11), transparent 55%),
+      radial-gradient(800px 500px at 50% 40%, rgba(155,107,255,0.08), transparent 60%),
+      var(--void);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+    padding-bottom:118px;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
+    mix-blend-mode: overlay;
+  }
+  .wrap{max-width:1180px; margin:0 auto; padding:0 20px; position:relative; z-index:1;}
+  a{color:inherit;}
+  ::-webkit-scrollbar{height:6px; width:6px;}
+  ::-webkit-scrollbar-thumb{background:var(--border); border-radius:4px;}
+  :focus-visible{outline:2px solid var(--cyan); outline-offset:2px;}
+
+  /* ---------- TOP NAV ---------- */
+  nav{display:flex; align-items:center; justify-content:space-between; padding:26px 0 0;}
+  .logo{font-family:'Rajdhani',sans-serif; font-weight:700; font-size:22px; letter-spacing:2px;}
+  .logo span{color:var(--cyan); text-shadow:0 0 16px rgba(43,232,255,0.55);}
+  .nav-stat{
+    font-family:'Space Mono', monospace; font-size:11px; color:var(--dim);
+    border:1px solid var(--border); border-radius:100px; padding:6px 14px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .dot-live{width:6px; height:6px; border-radius:50%; background:var(--magenta); box-shadow:0 0 8px var(--magenta); animation:pulse 1.6s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:.3;}}
+
+  /* ---------- HERO ---------- */
+  .hero{display:flex; align-items:center; gap:48px; padding:64px 0 60px; flex-wrap:wrap; position:relative;}
+  .hero-copy{flex:1; min-width:300px;}
+  .eyebrow{
+    font-family:'Rajdhani',sans-serif; font-weight:600; font-size:12.5px; letter-spacing:4px;
+    color:var(--dim); text-transform:uppercase; display:flex; align-items:center; gap:10px; margin-bottom:18px;
+  }
+  .eyebrow::before{content:''; width:22px; height:1px; background:linear-gradient(90deg,var(--cyan),var(--magenta));}
+  h1.hero-title{
+    font-family:'Bebas Neue', sans-serif; font-size:clamp(52px, 8vw, 92px); line-height:0.92; letter-spacing:1px;
+    background:linear-gradient(100deg, #fff 10%, var(--cyan) 42%, var(--magenta) 68%, var(--violet) 95%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero-sub{font-size:16px; color:var(--dim); max-width:480px; margin-top:18px; line-height:1.6;}
+  .hero-sub b{color:var(--text); font-weight:600;}
+  .hero-cta{display:flex; gap:14px; margin-top:30px; flex-wrap:wrap;}
+  .btn{
+    font-family:'Rajdhani',sans-serif; font-weight:600; font-size:14.5px; letter-spacing:1px;
+    padding:14px 26px; border-radius:11px; cursor:pointer; text-transform:uppercase;
+    display:inline-flex; align-items:center; gap:9px; border:1px solid transparent; transition:transform .15s, box-shadow .2s;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn-primary{background:linear-gradient(90deg, var(--cyan), var(--violet)); color:#040410; box-shadow:0 4px 24px rgba(43,232,255,0.28);}
+  .btn-primary:hover{box-shadow:0 6px 30px rgba(155,107,255,0.4);}
+  .btn-ghost{background:var(--glass); border-color:var(--border); color:var(--text);}
+  .btn-ghost:hover{background:var(--glass-hover); border-color:var(--magenta);}
+
+  /* ---------- HERO DIAL ---------- */
+  .dial-wrap{width:300px; height:300px; flex-shrink:0; position:relative; margin:0 auto;}
+  .dial-glow{position:absolute; inset:-40px; background:radial-gradient(circle, rgba(155,107,255,0.18), transparent 65%); filter:blur(10px);}
+  .dial-ring{position:absolute; inset:0; border-radius:50%; border:1px solid var(--border); background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.05), transparent 60%), rgba(255,255,255,0.02);}
+  .dial-ticks{position:absolute; inset:0; animation:spin 40s linear infinite;}
+  @keyframes spin{from{transform:rotate(0deg);} to{transform:rotate(360deg);}}
+  .dial-center{
+    position:absolute; inset:32%; border-radius:50%;
+    background:linear-gradient(135deg, rgba(43,232,255,0.15), rgba(255,63,192,0.1));
+    border:1px solid rgba(255,255,255,0.14);
+    display:flex; align-items:center; justify-content:center; flex-direction:column; backdrop-filter:blur(6px);
+  }
+  .dial-freq{font-family:'Space Mono',monospace; font-size:22px; color:var(--cyan); text-shadow:0 0 12px rgba(43,232,255,0.6);}
+  .dial-label{font-family:'Rajdhani',sans-serif; font-size:10px; letter-spacing:3px; color:var(--dim); margin-top:2px;}
+  .dial-needle{
+    position:absolute; left:50%; top:50%; width:3px; height:44%; background:linear-gradient(180deg, currentColor, transparent);
+    color:var(--magenta); transform-origin:bottom center; transform:translate(-50%,-100%) rotate(35deg);
+    animation:sweep 6s ease-in-out infinite; border-radius:3px; transition:transform .6s ease, color .3s ease;
+  }
+  .dial-needle.locked{ animation:none; }
+  @keyframes sweep{0%,100%{transform:translate(-50%,-100%) rotate(-40deg);} 50%{transform:translate(-50%,-100%) rotate(40deg);}}
+  .dial-idle, .dial-station{display:flex; align-items:center; justify-content:center; flex-direction:column;}
+  .dial-station-flag{font-size:22px; line-height:1;}
+  .dial-station-name{
+    font-family:'Rajdhani',sans-serif; font-weight:700; font-size:11px; letter-spacing:.5px; color:var(--text);
+    margin-top:4px; max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:center;
+  }
+  .dial-station-live{font-family:'Rajdhani',sans-serif; font-size:9px; letter-spacing:2px; color:var(--magenta); margin-top:2px;}
+  @media (max-width:860px){ .dial-wrap{width:220px; height:220px;} }
+
+  /* ---------- STATS ---------- */
+  .stats-strip{display:flex; gap:0; flex-wrap:wrap; border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:22px 0; margin-bottom:44px;}
+  .stat-item{flex:1; min-width:140px; text-align:center; padding:0 12px; border-right:1px solid var(--border);}
+  .stat-item:last-child{border-right:none;}
+  .stat-num{font-family:'Rajdhani',sans-serif; font-weight:700; font-size:26px;}
+  .stat-num.c1{color:var(--cyan);} .stat-num.c2{color:var(--magenta);} .stat-num.c3{color:var(--violet);} .stat-num.c4{color:var(--lime);}
+  .stat-cap{font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:1.5px; margin-top:3px;}
+
+  /* ---------- LCD ---------- */
+  .lcd{
+    border:1px solid rgba(43,232,255,0.25); background: linear-gradient(180deg, rgba(43,232,255,0.05), rgba(0,0,0,0.3));
+    border-radius:10px; padding:14px 18px; display:flex; align-items:center; gap:16px;
+    box-shadow: inset 0 0 24px rgba(43,232,255,0.06); overflow:hidden; position:relative; margin-bottom:24px;
+  }
+  .lcd-freq{font-family:'Space Mono',monospace; font-size:19px; color:var(--cyan); text-shadow:0 0 10px rgba(43,232,255,0.6); white-space:nowrap; min-width:70px;}
+  .lcd-track{flex:1; overflow:hidden; white-space:nowrap; position:relative; height:20px;}
+  .lcd-scroll{position:absolute; left:0; top:0; display:flex; animation:ticker 16s linear infinite;}
+  .lcd-scroll span{font-family:'Space Mono',monospace; font-size:13px; color:var(--cyan); text-shadow:0 0 8px rgba(43,232,255,0.5); white-space:nowrap; padding-right:40px;}
+  .lcd-static{font-family:'Space Mono',monospace; font-size:13px; color:var(--dimmer);}
+  @keyframes ticker{ 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
+
+  /* ---------- CONTROLS ---------- */
+  #stations{scroll-margin-top:20px;}
+  .controls{margin-bottom:20px; display:flex; flex-direction:column; gap:14px;}
+  .search-row{display:flex; gap:10px; flex-wrap:wrap;}
+  .search-box{flex:1; min-width:220px; position:relative;}
+  .search-box input{
+    width:100%; background:var(--glass); border:1px solid var(--border); border-radius:10px;
+    padding:13px 16px 13px 42px; color:var(--text); font-size:14px; outline:none; transition:border-color .2s, background .2s;
+  }
+  .search-box input:focus{border-color:var(--cyan); background:rgba(43,232,255,0.06);}
+  .search-box svg{position:absolute; left:14px; top:50%; transform:translateY(-50%); opacity:.5;}
+  select#countrySelect{background:var(--glass); border:1px solid var(--border); color:var(--text); border-radius:10px; padding:0 14px; font-size:13px; cursor:pointer;}
+  .btn-surprise{
+    background:linear-gradient(90deg, var(--coral), var(--amber)); color:#1a1000;
+    font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; letter-spacing:1px;
+    border:none; border-radius:10px; padding:0 18px; cursor:pointer; text-transform:uppercase;
+    display:flex; align-items:center; gap:6px; transition:transform .15s;
+  }
+  .btn-surprise:hover{transform:translateY(-2px);}
+  .chip-row{display:flex; gap:8px; flex-wrap:wrap;}
+  .chip{
+    font-family:'Rajdhani',sans-serif; font-weight:600; font-size:13px; letter-spacing:.5px;
+    padding:7px 16px; border-radius:100px; border:1px solid var(--border);
+    background:var(--glass); color:var(--dim); cursor:pointer; transition:all .15s; user-select:none;
+  }
+  .chip:hover{background:var(--glass-hover); color:var(--text);}
+  .chip.active{color:#040410; font-weight:700; border-color:transparent;}
+
+  /* ---------- GRID ---------- */
+  .section-label{
+    font-family:'Rajdhani',sans-serif; font-weight:600; font-size:13px; letter-spacing:3px;
+    text-transform:uppercase; color:var(--dim); margin:28px 0 14px; display:flex; align-items:center; gap:10px;
+  }
+  .section-label::after{content:''; flex:1; height:1px; background:var(--border);}
+  .back-link{
+    background:none; border:none; cursor:pointer; color:var(--cyan); font-family:'Rajdhani',sans-serif;
+    font-weight:700; font-size:13px; letter-spacing:1px; text-transform:none; display:inline-flex; align-items:center; gap:6px;
+    padding:0; white-space:nowrap;
+  }
+  .back-link:hover{color:var(--magenta);}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:14px;}
+  .card{
+    background:var(--glass); border:1px solid var(--border); border-radius:14px; padding:16px;
+    cursor:pointer; transition:transform .15s, border-color .15s, background .15s, box-shadow .2s;
+    position:relative; overflow:hidden; border-left-width:3px;
+  }
+  .card:hover{transform:translateY(-3px); background:var(--glass-hover);}
+  .card.playing{box-shadow:0 0 0 1px currentColor, 0 0 26px currentColor;}
+  .card-top{display:flex; gap:12px; align-items:center;}
+  .fav-icon{width:46px; height:46px; border-radius:10px; object-fit:cover; background:#11162a; flex-shrink:0; border:1px solid var(--border);}
+  .card-name{font-family:'Rajdhani',sans-serif; font-weight:600; font-size:15.5px; line-height:1.25; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .card-meta{font-size:11px; color:var(--dim); margin-top:3px; font-family:'Space Mono',monospace;}
+  .card-tags{margin-top:12px; display:flex; gap:6px; flex-wrap:wrap;}
+  .tag-pill{font-size:10px; color:var(--dimmer); border:1px solid var(--border); border-radius:6px; padding:2px 7px; text-transform:uppercase; letter-spacing:.5px;}
+  .star-btn{position:absolute; top:12px; right:12px; background:none; border:none; cursor:pointer; color:var(--dimmer); font-size:16px; transition:color .15s, transform .15s;}
+  .star-btn:hover{transform:scale(1.15);}
+  .star-btn.active{color:var(--amber); text-shadow:0 0 10px rgba(255,194,51,0.7);}
+  .mini-eq{position:absolute; bottom:10px; right:12px; display:flex; align-items:flex-end; gap:2px; height:14px;}
+  .mini-eq span{width:3px; background:currentColor; border-radius:2px; animation:eq 0.9s infinite ease-in-out;}
+  .mini-eq span:nth-child(2){animation-delay:.15s;}
+  .mini-eq span:nth-child(3){animation-delay:.3s;}
+  @keyframes eq{0%,100%{height:3px;} 50%{height:13px;}}
+
+  /* country cards */
+  .country-card{text-align:center; padding:22px 12px;}
+  .country-flag{font-size:36px; line-height:1; margin-bottom:10px;}
+  .country-name{font-family:'Rajdhani',sans-serif; font-weight:600; font-size:15px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .country-count{font-size:11px; color:var(--dim); font-family:'Space Mono',monospace; margin-top:5px;}
+
+  .empty-state{padding:60px 10px; text-align:center; color:var(--dim); grid-column:1/-1;}
+  .empty-state .big{font-family:'Rajdhani',sans-serif; font-weight:700; font-size:19px; color:var(--text); letter-spacing:1px;}
+  .empty-state .small{font-size:13px; margin-top:6px;}
+  .skeleton{background:var(--glass); border:1px solid var(--border); border-radius:14px; height:96px; animation:shimmer 1.4s infinite ease-in-out;}
+  @keyframes shimmer{0%,100%{opacity:.5;} 50%{opacity:.9;}}
+
+  #loadMoreWrap{text-align:center; margin-top:24px;}
+
+  footer{text-align:center; padding:50px 0 20px; color:var(--dimmer); font-size:12px;}
+  footer a{color:var(--cyan); text-decoration:none;}
+
+  /* ---------- PLAYER BAR ---------- */
+  .player{position:fixed; left:0; right:0; bottom:0; z-index:20; background:rgba(7,9,18,0.88); backdrop-filter:blur(20px); padding:14px 20px; border-top:1px solid transparent;}
+  .player::before{
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg, var(--cyan), var(--magenta), var(--violet), var(--lime), var(--cyan));
+    background-size:300% 100%; animation:rainbow-slide 8s linear infinite;
+  }
+  @keyframes rainbow-slide{ 0%{background-position:0% 0;} 100%{background-position:300% 0;} }
+  .player-inner{max-width:1180px; margin:0 auto; width:100%; display:flex; align-items:center; gap:16px;}
+
+  .p-eject{
+    width:34px; height:34px; border-radius:8px; border:1px solid var(--border); background:var(--glass);
+    color:var(--dim); cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:14px; transition:all .15s;
+  }
+  .p-eject:hover{color:var(--coral); border-color:var(--coral);}
+
+  .p-art-wrap{position:relative; flex-shrink:0;}
+  .p-art{width:52px; height:52px; border-radius:12px; object-fit:cover; background:#11162a; border:1px solid var(--border);}
+  .p-art-ring{position:absolute; inset:-4px; border-radius:14px; border:2px solid currentColor; opacity:0; transition:opacity .2s;}
+  .p-art-ring.on{opacity:.55; animation:ringpulse 2s infinite;}
+  @keyframes ringpulse{0%,100%{box-shadow:0 0 0 0 currentColor;} 50%{box-shadow:0 0 14px 1px currentColor;}}
+
+  .player-meta{min-width:0; width:190px; flex-shrink:1;}
+  .p-live-badge{display:inline-flex; align-items:center; gap:5px; font-family:'Rajdhani',sans-serif; font-size:10px; font-weight:700; letter-spacing:1.5px; color:var(--magenta); margin-bottom:2px;}
+  .p-live-dot{width:5px; height:5px; border-radius:50%; background:currentColor; box-shadow:0 0 6px currentColor; animation:pulse 1.4s infinite;}
+  .player-meta .name{font-family:'Rajdhani',sans-serif; font-weight:700; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .player-meta .sub{font-size:11px; color:var(--dim); font-family:'Space Mono',monospace; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+
+  .play-btn{
+    width:50px; height:50px; border-radius:50%; border:1.5px solid currentColor; cursor:pointer; flex-shrink:0;
+    background:radial-gradient(circle, currentColor 0%, transparent 70%); background-color:rgba(255,255,255,0.03);
+    display:flex; align-items:center; justify-content:center; transition:box-shadow .2s; box-shadow:0 0 18px currentColor; color:var(--cyan);
+  }
+  .play-btn:hover{box-shadow:0 0 28px currentColor;}
+  .play-btn svg{fill:currentColor;}
+
+  canvas#viz{height:40px; width:100%; max-width:360px; flex:1;}
+
+  .vol-wrap{display:flex; align-items:center; gap:8px; flex-shrink:0; color:var(--cyan);}
+  .vol-wrap svg{fill:currentColor;}
+  .vol-wrap input[type=range]{width:88px; accent-color:currentColor;}
+  .player-fav{position:static !important; flex-shrink:0;}
+
+  .btn:disabled, .btn-surprise:disabled{opacity:.5; cursor:wait; transform:none !important;}
+
+  .eq-wrap{position:relative; flex-shrink:0;}
+  .eq-btn{width:auto; padding:0 10px; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:11px; letter-spacing:1px;}
+  .eq-btn.active{color:var(--cyan); border-color:var(--cyan);}
+  .eq-panel{
+    position:absolute; bottom:calc(100% + 14px); right:0; width:220px;
+    background:rgba(10,12,22,0.96); backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:14px;
+    padding:16px; display:none; flex-direction:column; gap:12px; box-shadow:0 10px 40px rgba(0,0,0,0.5);
+  }
+  .eq-panel.open{display:flex;}
+  .eq-title{font-family:'Rajdhani',sans-serif; font-weight:700; font-size:12px; letter-spacing:2px; color:var(--dim); text-transform:uppercase;}
+  .eq-sliders{display:flex; justify-content:space-between; gap:10px; padding:6px 4px;}
+  .eq-band{display:flex; flex-direction:column; align-items:center; gap:8px;}
+  .eq-band input[type=range]{
+    writing-mode:vertical-lr; direction:rtl; width:5px; height:90px; accent-color:var(--cyan); cursor:pointer;
+  }
+  .eq-band label{font-family:'Space Mono',monospace; font-size:10px; color:var(--dim); letter-spacing:.5px;}
+  .eq-presets{display:flex; gap:6px; flex-wrap:wrap;}
+  .eq-preset{
+    font-family:'Rajdhani',sans-serif; font-size:11px; font-weight:600; color:var(--dim); background:var(--glass);
+    border:1px solid var(--border); border-radius:100px; padding:4px 10px; cursor:pointer; transition:all .15s;
+  }
+  .eq-preset:hover{color:var(--text); background:var(--glass-hover);}
+
+  @media (max-width:760px){
+    .player-meta{width:100px;}
+    canvas#viz{max-width:100px;}
+    .vol-wrap{display:none;}
+    .p-eject{display:none;}
+    .eq-panel{right:-40px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav>
+    <div class="logo">SIGNAL<span>•FM</span></div>
+    <div class="nav-stat"><span class="dot-live"></span><span id="navStat">connecting…</span></div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">Live internet radio · Powered by Radio-Browser</div>
+      <h1 class="hero-title">TUNE THE<br>WORLD</h1>
+      <p class="hero-sub">Search, discover, and stream <b>real live radio stations</b> from every corner of the planet — no logins, no downloads, just hit play.</p>
+      <div class="hero-cta">
+        <button class="btn btn-primary" id="ctaStart">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          Start Listening
+        </button>
+        <button class="btn btn-ghost" id="ctaSurprise">🎲 Surprise Me</button>
+      </div>
+    </div>
+    <div class="dial-wrap">
+      <div class="dial-glow"></div>
+      <div class="dial-ring"></div>
+      <svg class="dial-ticks" viewBox="0 0 300 300" width="300" height="300"><g id="tickGroup"></g></svg>
+      <div class="dial-needle" id="dialNeedle"></div>
+      <div class="dial-center">
+        <div class="dial-idle" id="dialIdle">
+          <div class="dial-freq" id="heroFreq">99.5</div>
+          <div class="dial-label">ON AIR</div>
+        </div>
+        <div class="dial-station" id="dialStation" style="display:none;">
+          <div class="dial-station-flag" id="dialFlag">📻</div>
+          <div class="dial-station-name" id="dialStationName">Station</div>
+          <div class="dial-station-live" id="dialStatus">TUNED IN</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="stats-strip" id="statsStrip">
+    <div class="stat-item"><div class="stat-num c1" id="statStations">—</div><div class="stat-cap">Live stations</div></div>
+    <div class="stat-item"><div class="stat-num c2" id="statCountries">—</div><div class="stat-cap">Countries</div></div>
+    <div class="stat-item"><div class="stat-num c3" id="statTags">—</div><div class="stat-cap">Genres &amp; tags</div></div>
+    <div class="stat-item"><div class="stat-num c4">24/7</div><div class="stat-cap">Always broadcasting</div></div>
+  </div>
+
+  <div id="stations">
+    <div class="lcd">
+      <div class="lcd-freq" id="lcdFreq">88.1</div>
+      <div class="lcd-track">
+        <div class="lcd-scroll" id="lcdScroll" style="display:none;"><span id="lcdSpan1"></span><span id="lcdSpan2"></span></div>
+        <div class="lcd-static" id="lcdStatic">NO SIGNAL — SELECT A STATION BELOW</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="search-row">
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8891a7" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input id="searchInput" type="text" placeholder="Search stations, genres, cities…" autocomplete="off">
+        </div>
+        <select id="countrySelect">
+          <option value="">Jump to a country…</option>
+          <option value="United States">United States</option>
+          <option value="United Kingdom">United Kingdom</option>
+          <option value="Germany">Germany</option>
+          <option value="France">France</option>
+          <option value="Japan">Japan</option>
+          <option value="Brazil">Brazil</option>
+          <option value="Australia">Australia</option>
+          <option value="Canada">Canada</option>
+          <option value="India">India</option>
+          <option value="Netherlands">Netherlands</option>
+        </select>
+        <button class="btn-surprise" id="btnSurprise2">🎲 Random</button>
+      </div>
+      <div class="chip-row" id="chipRow"></div>
+    </div>
+
+    <div class="section-label" id="gridLabel">Browse by country</div>
+    <div class="grid" id="grid">
+      <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+      <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+    </div>
+    <div id="loadMoreWrap"></div>
+  </div>
+
+  <footer>Station data &amp; streams via <a href="https://www.radio-browser.info" target="_blank" rel="noopener">radio-browser.info</a> — a free, community-maintained directory.</footer>
+</div>
+
+<div class="player">
+  <div class="player-inner">
+    <button class="p-eject" id="ejectBtn" title="Stop and clear station">✕</button>
+    <div class="p-art-wrap">
+      <div class="p-art-ring" id="artRing"></div>
+      <img class="p-art" id="pArt" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%2311162a'/%3E%3Ccircle cx='12' cy='12' r='3' fill='none' stroke='%232be8ff' stroke-width='1.6'/%3E%3Cpath d='M12 2a10 10 0 0 1 10 10M12 2A10 10 0 0 0 2 12M6.3 17.7l-1.4 1.4M17.7 17.7l1.4 1.4' stroke='%232be8ff' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
+    </div>
+    <div class="player-meta">
+      <div class="p-live-badge" id="liveBadge" style="visibility:hidden;"><span class="p-live-dot"></span>LIVE</div>
+      <div class="name" id="pName">Nothing tuned in</div>
+      <div class="sub" id="pSub">Pick a station to start listening</div>
+    </div>
+    <button class="play-btn" id="playBtn" title="Play / Pause" aria-label="Play or pause">
+      <svg id="playIcon" width="16" height="16" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <svg id="pauseIcon" width="16" height="16" viewBox="0 0 24 24" style="display:none"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
+    </button>
+    <canvas id="viz" width="360" height="40"></canvas>
+    <div class="vol-wrap">
+      <svg width="15" height="15" viewBox="0 0 24 24"><path d="M3 10v4h4l5 5V5L7 10H3z"/></svg>
+      <input type="range" id="volSlider" min="0" max="1" step="0.01" value="0.85">
+    </div>
+    <div class="eq-wrap">
+      <button class="p-eject eq-btn" id="eqBtn" title="Equalizer">EQ</button>
+      <div class="eq-panel" id="eqPanel">
+        <div class="eq-title">Equalizer</div>
+        <div class="eq-sliders">
+          <div class="eq-band"><input type="range" id="eqBass" min="-15" max="15" value="0"><label>Bass</label></div>
+          <div class="eq-band"><input type="range" id="eqMid" min="-15" max="15" value="0"><label>Mid</label></div>
+          <div class="eq-band"><input type="range" id="eqTreble" min="-15" max="15" value="0"><label>Treble</label></div>
+        </div>
+        <div class="eq-presets">
+          <div class="eq-preset" data-p="0,0,0">Flat</div>
+          <div class="eq-preset" data-p="9,-2,-3">Bass+</div>
+          <div class="eq-preset" data-p="-3,6,3">Vocal</div>
+          <div class="eq-preset" data-p="-3,-1,8">Treble+</div>
+        </div>
+      </div>
+    </div>
+    <button class="star-btn player-fav" id="pFav" aria-label="Toggle favorite">☆</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const MIRRORS = ['de1.api.radio-browser.info','de2.api.radio-browser.info','nl1.api.radio-browser.info','at1.api.radio-browser.info'];
+  const GENRES = ['Pop','Rock','Jazz','Electronic','News','Classical','Talk','Hip-Hop','Reggae','Metal','Chill','80s'];
+  const ACCENTS = ['#2be8ff','#ff3fc0','#9b6bff','#c6ff3d','#ffc233','#ff6a5c','#22ffb0'];
+  const PAGE_SIZE = 30;
+  const FALLBACK_ICON = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%2311162a'/%3E%3Ccircle cx='12' cy='12' r='3' fill='none' stroke='%232be8ff' stroke-width='1.6'/%3E%3Cpath d='M12 2a10 10 0 0 1 10 10M12 2A10 10 0 0 0 2 12M6.3 17.7l-1.4 1.4M17.7 17.7l1.4 1.4' stroke='%232be8ff' stroke-width='1.6' fill='none'/%3E%3C/svg%3E";
+
+  const grid = document.getElementById('grid');
+  const gridLabel = document.getElementById('gridLabel');
+  const loadMoreWrap = document.getElementById('loadMoreWrap');
+  const searchInput = document.getElementById('searchInput');
+  const countrySelect = document.getElementById('countrySelect');
+  const chipRow = document.getElementById('chipRow');
+  const navStat = document.getElementById('navStat');
+  const lcdFreq = document.getElementById('lcdFreq');
+  const lcdScroll = document.getElementById('lcdScroll');
+  const lcdStatic = document.getElementById('lcdStatic');
+  const lcdSpan1 = document.getElementById('lcdSpan1');
+  const lcdSpan2 = document.getElementById('lcdSpan2');
+  const heroFreq = document.getElementById('heroFreq');
+  const playBtn = document.getElementById('playBtn');
+  const playIcon = document.getElementById('playIcon');
+  const pauseIcon = document.getElementById('pauseIcon');
+  const pName = document.getElementById('pName');
+  const pSub = document.getElementById('pSub');
+  const pFav = document.getElementById('pFav');
+  const pArt = document.getElementById('pArt');
+  const artRing = document.getElementById('artRing');
+  const liveBadge = document.getElementById('liveBadge');
+  const ejectBtn = document.getElementById('ejectBtn');
+  const volSlider = document.getElementById('volSlider');
+  const volWrap = document.querySelector('.vol-wrap');
+  const canvas = document.getElementById('viz');
+  const ctx = canvas.getContext('2d');
+  const dialIdle = document.getElementById('dialIdle');
+  const dialStation = document.getElementById('dialStation');
+  const dialFlag = document.getElementById('dialFlag');
+  const dialStationName = document.getElementById('dialStationName');
+  const dialStatus = document.getElementById('dialStatus');
+  const dialNeedle = document.getElementById('dialNeedle');
+  const eqBtn = document.getElementById('eqBtn');
+  const eqPanel = document.getElementById('eqPanel');
+  const eqBass = document.getElementById('eqBass');
+  const eqMid = document.getElementById('eqMid');
+  const eqTreble = document.getElementById('eqTreble');
+  const ctaSurpriseBtn = document.getElementById('ctaSurprise');
+  const btnSurprise2 = document.getElementById('btnSurprise2');
+
+  const audio = new Audio();
+  audio.volume = 0.85;
+
+  let activeTag = null;
+  let currentStation = null;
+  let isPlaying = false;
+  let currentAccent = '#2be8ff';
+  const favorites = new Set();
+  const allStationsById = new Map();
+  const cardElsByUuid = new Map();
+  let currentList = [];
+  let viewMode = 'countries';
+
+  let countryQuery = null;
+  let countryLabel = '';
+  let countryOffset = 0;
+
+  // ---------- Web Audio graph (for the equalizer) ----------
+  let audioCtx = null, bassFilter = null, midFilter = null, trebleFilter = null;
+  function ensureAudioGraph(){
+    if(audioCtx){ resumeAudioGraph(); return; }
+    try{
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const source = audioCtx.createMediaElementSource(audio);
+      bassFilter = audioCtx.createBiquadFilter(); bassFilter.type = 'lowshelf'; bassFilter.frequency.value = 200;
+      midFilter = audioCtx.createBiquadFilter(); midFilter.type = 'peaking'; midFilter.frequency.value = 1000; midFilter.Q.value = 0.8;
+      trebleFilter = audioCtx.createBiquadFilter(); trebleFilter.type = 'highshelf'; trebleFilter.frequency.value = 3000;
+      source.connect(bassFilter).connect(midFilter).connect(trebleFilter).connect(audioCtx.destination);
+      resumeAudioGraph();
+    }catch(e){ /* Web Audio unavailable — playback still works without EQ */ }
+  }
+  function resumeAudioGraph(){
+    if(audioCtx && audioCtx.state === 'suspended'){ audioCtx.resume().catch(()=>{}); }
+  }
+  function setEq(bass, mid, treble){
+    eqBass.value = bass; eqMid.value = mid; eqTreble.value = treble;
+    if(bassFilter) bassFilter.gain.value = bass;
+    if(midFilter) midFilter.gain.value = mid;
+    if(trebleFilter) trebleFilter.gain.value = treble;
+  }
+  eqBtn.addEventListener('click', ()=>{
+    ensureAudioGraph();
+    eqPanel.classList.toggle('open');
+    eqBtn.classList.toggle('active', eqPanel.classList.contains('open'));
+  });
+  eqBass.addEventListener('input', ()=>{ if(bassFilter) bassFilter.gain.value = parseFloat(eqBass.value); });
+  eqMid.addEventListener('input', ()=>{ if(midFilter) midFilter.gain.value = parseFloat(eqMid.value); });
+  eqTreble.addEventListener('input', ()=>{ if(trebleFilter) trebleFilter.gain.value = parseFloat(eqTreble.value); });
+  document.querySelectorAll('.eq-preset').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      ensureAudioGraph();
+      const [b,m,t] = btn.dataset.p.split(',').map(Number);
+      setEq(b,m,t);
+    });
+  });
+  document.addEventListener('click', (e)=>{
+    if(!e.target.closest('.eq-wrap') && eqPanel.classList.contains('open')){
+      eqPanel.classList.remove('open'); eqBtn.classList.remove('active');
+    }
+  });
+
+  // ---------- Hero dial: reflects the currently tuned station ----------
+  function angleForStation(uuid){
+    if(!uuid) return 0;
+    let sum = 0; for(let i=0;i<uuid.length;i++) sum += uuid.charCodeAt(i) * (i+1);
+    return (sum % 151) - 75; // -75..75 degrees
+  }
+  function updateDial(){
+    if(currentStation){
+      dialIdle.style.display = 'none';
+      dialStation.style.display = 'flex';
+      dialFlag.textContent = currentStation.countrycode ? flagEmoji(currentStation.countrycode) : '📻';
+      dialStationName.textContent = (currentStation.name || 'Unknown station').trim();
+      dialStatus.textContent = isPlaying ? 'TUNED IN' : 'PAUSED';
+      dialNeedle.classList.add('locked');
+      dialNeedle.style.transform = `translate(-50%,-100%) rotate(${angleForStation(currentStation.stationuuid)}deg)`;
+      dialNeedle.style.color = currentAccent;
+    } else {
+      dialIdle.style.display = 'flex';
+      dialStation.style.display = 'none';
+      dialNeedle.classList.remove('locked');
+      dialNeedle.style.transform = '';
+      dialNeedle.style.color = '';
+    }
+  }
+
+  // ---------- Robust favicon loading (never leaves a blank/broken image) ----------
+  function loadIconInto(imgEl, url){
+    imgEl.src = FALLBACK_ICON;
+    if(!url || !/^https?:\/\//i.test(url)) return;
+    const probe = new Image();
+    let done = false;
+    const giveUp = setTimeout(()=>{ done = true; }, 5000);
+    probe.onload = ()=>{ if(!done){ clearTimeout(giveUp); imgEl.src = url; } };
+    probe.onerror = ()=>{ clearTimeout(giveUp); };
+    probe.src = url;
+  }
+
+  function accentFor(uuid){
+    if(!uuid) return ACCENTS[0];
+    let sum = 0; for(let i=0;i<uuid.length;i++) sum += uuid.charCodeAt(i);
+    return ACCENTS[sum % ACCENTS.length];
+  }
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function flagEmoji(code){
+    if(!code || code.length!==2) return '🌐';
+    const up = code.toUpperCase();
+    if(!/^[A-Z]{2}$/.test(up)) return '🌐';
+    return String.fromCodePoint(...[...up].map(c=>127397 + c.charCodeAt(0)));
+  }
+  function countryName(code){
+    try{ return new Intl.DisplayNames(['en'], {type:'region'}).of(code.toUpperCase()) || code; }
+    catch(e){ return code; }
+  }
+  function safeIcon(url){
+    return (url && /^https?:\/\//i.test(url)) ? url : FALLBACK_ICON;
+  }
+
+  async function apiGet(path){
+    for(const host of MIRRORS){
+      try{
+        const ctrl = new AbortController();
+        const t = setTimeout(()=>ctrl.abort(), 6000);
+        const res = await fetch(`https://${host}${path}`, { signal: ctrl.signal, headers:{'Accept':'application/json'} });
+        clearTimeout(t);
+        if(!res.ok) continue;
+        return await res.json();
+      }catch(e){ continue; }
+    }
+    throw new Error('All mirrors unreachable');
+  }
+  function registerClick(uuid){ apiGet(`/json/url/${uuid}`).catch(()=>{}); }
+
+  function buildDial(){
+    const g = document.getElementById('tickGroup');
+    const cx=150, cy=150, rOuter=142, rInner=126;
+    let html = '';
+    for(let i=0;i<48;i++){
+      const angle = (i/48) * Math.PI*2;
+      const x1 = cx + rOuter*Math.cos(angle), y1 = cy + rOuter*Math.sin(angle);
+      const x2 = cx + rInner*Math.cos(angle), y2 = cy + rInner*Math.sin(angle);
+      const color = ACCENTS[i % ACCENTS.length];
+      html += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${color}" stroke-width="2" opacity="0.55"/>`;
+    }
+    g.innerHTML = html;
+  }
+  buildDial();
+  setInterval(()=>{ heroFreq.textContent = (87 + Math.random()*20).toFixed(1); }, 4200);
+
+  function renderChips(){
+    chipRow.innerHTML = '';
+    const favChip = document.createElement('div');
+    favChip.className = 'chip' + (viewMode==='favorites' ? ' active':'');
+    if(viewMode==='favorites'){ favChip.style.background = 'linear-gradient(90deg, var(--amber), var(--coral))'; }
+    favChip.textContent = '★ Favorites';
+    favChip.onclick = ()=>showFavorites();
+    chipRow.appendChild(favChip);
+    GENRES.forEach((g,i)=>{
+      const c = document.createElement('div');
+      const isActive = activeTag===g;
+      c.className = 'chip' + (isActive ? ' active':'');
+      if(isActive){ c.style.background = `linear-gradient(90deg, ${ACCENTS[i%ACCENTS.length]}, ${ACCENTS[(i+2)%ACCENTS.length]})`; }
+      c.textContent = g;
+      c.onclick = ()=>toggleTag(g);
+      chipRow.appendChild(c);
+    });
+  }
+
+  function skeletons(){ grid.innerHTML = Array(6).fill('<div class="skeleton"></div>').join(''); cardElsByUuid.clear(); }
+  function emptyState(msg, sub){
+    grid.innerHTML = `<div class="empty-state"><div class="big">${msg}</div><div class="small">${sub}</div></div>`;
+  }
+  function clearLoadMore(){ loadMoreWrap.innerHTML = ''; }
+  function showLoadMore(onClick){
+    loadMoreWrap.innerHTML = `<button class="btn btn-ghost" id="loadMoreBtn">Load more stations</button>`;
+    document.getElementById('loadMoreBtn').onclick = onClick;
+  }
+
+  async function loadCountries(){
+    viewMode = 'countries'; activeTag = null; renderChips();
+    clearLoadMore(); skeletons();
+    gridLabel.textContent = 'Browse by country';
+    try{
+      const codes = await apiGet('/json/countrycodes?order=stationcount&reverse=true&limit=120');
+      const valid = codes.filter(c=>c.stationcount > 0 && c.name && c.name.length===2).slice(0, 96);
+      renderCountryGrid(valid);
+    }catch(e){
+      emptyState("CAN'T REACH THE NETWORK", 'The radio directory is unreachable right now. Try again shortly.');
+    }
+  }
+
+  function renderCountryGrid(list){
+    if(!list || list.length===0){ emptyState('NO COUNTRIES FOUND', 'Try again shortly.'); return; }
+    grid.innerHTML = ''; cardElsByUuid.clear();
+    list.forEach((c,i)=>{
+      const code = c.name;
+      const name = countryName(code);
+      const accent = ACCENTS[i % ACCENTS.length];
+      const card = document.createElement('div');
+      card.className = 'card country-card';
+      card.style.borderLeftColor = accent;
+      card.innerHTML = `
+        <div class="country-flag">${flagEmoji(code)}</div>
+        <div class="country-name">${escapeHtml(name)}</div>
+        <div class="country-count">${c.stationcount.toLocaleString()} stations</div>
+      `;
+      card.addEventListener('click', ()=>loadCountryStations({code}, name));
+      grid.appendChild(card);
+    });
+  }
+
+  function cacheStations(list){ list.forEach(s=>allStationsById.set(s.stationuuid, s)); }
+
+  function buildCard(st){
+    const accent = accentFor(st.stationuuid);
+    const isCurrent = currentStation && currentStation.stationuuid===st.stationuuid && isPlaying;
+    const card = document.createElement('div');
+    card.className = 'card' + (isCurrent ? ' playing':'');
+    card.style.borderLeftColor = accent;
+    card.style.color = accent;
+    const bitrate = st.bitrate ? `${st.bitrate}kbps` : '—';
+    const country = st.country || 'Unknown';
+    const codec = (st.codec||'').toUpperCase();
+    const tags = (st.tags||'').split(',').map(t=>t.trim()).filter(Boolean).slice(0,3);
+    const isFav = favorites.has(st.stationuuid);
+
+    card.innerHTML = `
+      <button class="star-btn ${isFav?'active':''}" data-uuid="${st.stationuuid}">${isFav?'★':'☆'}</button>
+      <div class="card-top">
+        <img class="fav-icon" loading="lazy">
+        <div style="min-width:0; color:var(--text);">
+          <div class="card-name">${escapeHtml(st.name||'Untitled station')}</div>
+          <div class="card-meta">${escapeHtml(country)} · ${bitrate} ${codec}</div>
+        </div>
+      </div>
+      <div class="card-tags">${tags.map(t=>`<span class="tag-pill">${escapeHtml(t)}</span>`).join('')}</div>
+      ${isCurrent ? `<div class="mini-eq"><span></span><span></span><span></span></div>` : ''}
+    `;
+    loadIconInto(card.querySelector('.fav-icon'), st.favicon);
+    card.addEventListener('click', (e)=>{
+      if(e.target.closest('.star-btn')) return;
+      playStation(st);
+    });
+    card.querySelector('.star-btn').addEventListener('click', (e)=>{
+      e.stopPropagation();
+      toggleFavorite(st.stationuuid);
+    });
+    return card;
+  }
+
+  function renderStations(list, opts){
+    opts = opts || {};
+    if(opts.append){
+      currentList = currentList.concat(list);
+    } else {
+      grid.innerHTML = ''; cardElsByUuid.clear();
+      currentList = list.slice();
+    }
+    if(!opts.append && (!list || list.length===0)){
+      emptyState('NOTHING ON THIS FREQUENCY', 'Try a different search, genre, or country.');
+      return;
+    }
+    list.forEach(st=>{
+      const card = buildCard(st);
+      cardElsByUuid.set(st.stationuuid, card);
+      grid.appendChild(card);
+    });
+  }
+
+  function refreshPlayingHighlight(){
+    cardElsByUuid.forEach((el, uuid)=>{
+      const isThis = !!(currentStation && currentStation.stationuuid===uuid && isPlaying);
+      el.classList.toggle('playing', isThis);
+      el.style.color = accentFor(uuid);
+      let eq = el.querySelector('.mini-eq');
+      if(isThis && !eq){
+        eq = document.createElement('div'); eq.className = 'mini-eq';
+        eq.innerHTML = '<span></span><span></span><span></span>';
+        el.appendChild(eq);
+      } else if(!isThis && eq){
+        eq.remove();
+      }
+    });
+  }
+
+  function refreshFavButton(uuid){
+    const el = cardElsByUuid.get(uuid);
+    if(!el) return;
+    const btn = el.querySelector('.star-btn');
+    if(!btn) return;
+    const isFav = favorites.has(uuid);
+    btn.textContent = isFav ? '★' : '☆';
+    btn.classList.toggle('active', isFav);
+  }
+
+  function toggleFavorite(uuid){
+    if(favorites.has(uuid)) favorites.delete(uuid); else favorites.add(uuid);
+    if(currentStation && currentStation.stationuuid===uuid){
+      pFav.textContent = favorites.has(uuid) ? '★' : '☆';
+      pFav.classList.toggle('active', favorites.has(uuid));
+    }
+    if(viewMode==='favorites'){ showFavorites(); }
+    else { refreshFavButton(uuid); }
+  }
+
+  function showFavorites(){
+    activeTag = null; viewMode = 'favorites'; renderChips(); clearLoadMore();
+    gridLabel.textContent = 'Your favorites (this session)';
+    const list = Array.from(allStationsById.values()).filter(s=>favorites.has(s.stationuuid));
+    if(favorites.size===0){
+      emptyState('NO FAVORITES YET', 'Tap the star on any station to save it here for this session.');
+      currentList = [];
+    } else {
+      renderStations(list);
+    }
+  }
+
+  async function loadCountryStations(query, label, opts){
+    opts = opts || {};
+    countryQuery = query; countryLabel = label;
+    if(!opts.append){ countryOffset = 0; skeletons(); viewMode = 'country-detail'; clearLoadMore(); }
+    gridLabel.innerHTML = `<button class="back-link" id="backToCountries">← All countries</button> ${escapeHtml(label)}`;
+    document.getElementById('backToCountries').onclick = ()=>{ countryQuery=null; loadCountries(); };
+
+    const path = query.code
+      ? `/json/stations/bycountrycodeexact/${encodeURIComponent(query.code)}`
+      : `/json/stations/bycountry/${encodeURIComponent(query.name)}`;
+    try{
+      const data = await apiGet(`${path}?limit=${PAGE_SIZE}&offset=${countryOffset}&hidebroken=true&order=clickcount&reverse=true`);
+      cacheStations(data);
+      renderStations(data, {append: !!opts.append});
+      countryOffset += data.length;
+      if(data.length === PAGE_SIZE){
+        showLoadMore(()=>loadCountryStations(countryQuery, countryLabel, {append:true}));
+      } else {
+        clearLoadMore();
+      }
+    }catch(e){
+      if(!opts.append) emptyState('COULD NOT LOAD THIS COUNTRY', 'Try another country or search instead.');
+    }
+  }
+
+  async function runSearch(q){
+    viewMode = 'search'; clearLoadMore(); skeletons();
+    gridLabel.textContent = `Results for "${q}"`;
+    try{
+      const data = await apiGet(`/json/stations/search?name=${encodeURIComponent(q)}&limit=40&hidebroken=true&order=clickcount&reverse=true`);
+      cacheStations(data);
+      renderStations(data);
+    }catch(e){ emptyState('SEARCH FAILED', 'Could not reach the station directory. Try again.'); }
+  }
+  async function loadTag(tag){
+    viewMode = 'tag'; clearLoadMore(); skeletons();
+    gridLabel.textContent = `Genre: ${tag}`;
+    try{
+      const data = await apiGet(`/json/stations/bytagexact/${encodeURIComponent(tag.toLowerCase())}?limit=40&hidebroken=true&order=clickcount&reverse=true`);
+      cacheStations(data);
+      renderStations(data);
+    }catch(e){ emptyState('COULD NOT LOAD GENRE', 'Try another genre or search instead.'); }
+  }
+  async function playRandom(){
+    const btns = [ctaSurpriseBtn, btnSurprise2];
+    btns.forEach(b=>{ b.disabled = true; });
+    pSub.textContent = 'Scanning for a live station…';
+    pName.textContent = 'Rolling the dice…';
+    liveBadge.style.visibility = 'hidden';
+
+    let candidates = [];
+    try{
+      candidates = await apiGet('/json/stations/search?limit=25&hidebroken=true&order=random');
+    }catch(e){ candidates = []; }
+    if(!candidates || candidates.length === 0){
+      try{
+        const pool = await apiGet('/json/stations/topclick/100?hidebroken=true');
+        candidates = (pool || []).sort(()=>Math.random() - 0.5);
+      }catch(e){ candidates = []; }
+    }
+    cacheStations(candidates);
+
+    let played = false;
+    for(const st of candidates){
+      const ok = await attemptPlay(st);
+      if(ok){ played = true; registerClick(st.stationuuid); break; }
+    }
+    if(!played){
+      currentStation = null; isPlaying = false;
+      pName.textContent = 'Nothing tuned in';
+      pSub.textContent = "Couldn't find a live station — try again";
+    }
+    updatePlayerUI();
+    btns.forEach(b=>{ b.disabled = false; });
+  }
+  function toggleTag(tag){
+    if(activeTag === tag){ activeTag = null; renderChips(); loadCountries(); return; }
+    activeTag = tag; renderChips(); loadTag(tag);
+  }
+
+  function playStation(st){
+    currentStation = st;
+    currentAccent = accentFor(st.stationuuid);
+    const url = st.url_resolved || st.url;
+    audio.src = url;
+    audio.play().then(()=>{ isPlaying = true; updatePlayerUI(); })
+      .catch(()=>{ isPlaying = false; pSub.textContent = 'Stream unavailable — try another station'; updatePlayerUI(); });
+    registerClick(st.stationuuid);
+    updatePlayerUI();
+  }
+
+  // Tries to actually start a candidate station, waiting for a real 'playing' event
+  // (or a timeout / error) rather than trusting play() to mean it's working.
+  function attemptPlay(st){
+    return new Promise(resolve=>{
+      currentStation = st;
+      currentAccent = accentFor(st.stationuuid);
+      updatePlayerUI();
+      const url = st.url_resolved || st.url;
+      audio.src = url;
+      let settled = false;
+      const cleanup = ()=>{
+        audio.removeEventListener('playing', onPlaying);
+        audio.removeEventListener('error', onError);
+        clearTimeout(timer);
+      };
+      const finish = (ok)=>{ if(settled) return; settled = true; cleanup(); resolve(ok); };
+      const onPlaying = ()=>{ isPlaying = true; updatePlayerUI(); finish(true); };
+      const onError = ()=>finish(false);
+      audio.addEventListener('playing', onPlaying);
+      audio.addEventListener('error', onError);
+      audio.play().catch(()=>{ /* rely on the error event above */ });
+      const timer = setTimeout(()=>finish(false), 7000);
+    });
+  }
+
+  function updatePlayerUI(){
+    if(!currentStation){
+      pName.textContent = 'Nothing tuned in';
+      pSub.textContent = 'Pick a station to start listening';
+      liveBadge.style.visibility = 'hidden';
+      artRing.classList.remove('on');
+      pArt.src = FALLBACK_ICON;
+      refreshPlayingHighlight();
+      updateDial();
+      return;
+    }
+    [playBtn, pFav, artRing, canvas, volWrap].forEach(el=>{ el.style.color = currentAccent; });
+    liveBadge.style.color = currentAccent;
+
+    pName.textContent = currentStation.name || 'Untitled station';
+    const bitrate = currentStation.bitrate ? `${currentStation.bitrate}kbps` : '';
+    if(isPlaying || pSub.textContent !== 'Buffering…'){
+      pSub.textContent = [currentStation.country, bitrate].filter(Boolean).join(' · ');
+    }
+    loadIconInto(pArt, currentStation.favicon);
+
+    playIcon.style.display = isPlaying ? 'none':'block';
+    pauseIcon.style.display = isPlaying ? 'block':'none';
+    liveBadge.style.visibility = isPlaying ? 'visible':'hidden';
+    artRing.classList.toggle('on', isPlaying);
+
+    const isFav = favorites.has(currentStation.stationuuid);
+    pFav.textContent = isFav ? '★':'☆';
+    pFav.classList.toggle('active', isFav);
+
+    lcdFreq.textContent = (87 + Math.random()*20).toFixed(1);
+    lcdFreq.style.color = currentAccent;
+    if(isPlaying){
+      const label = `TUNED TO ${(currentStation.name||'').toUpperCase()} — ${(currentStation.country||'UNKNOWN').toUpperCase()} — ${bitrate.toUpperCase()} ${(currentStation.codec||'').toUpperCase()}`;
+      lcdSpan1.textContent = label; lcdSpan2.textContent = label;
+      lcdSpan1.style.color = currentAccent; lcdSpan2.style.color = currentAccent;
+      lcdScroll.style.display = 'flex'; lcdStatic.style.display = 'none';
+    } else {
+      lcdScroll.style.display = 'none'; lcdStatic.style.display = 'block';
+      lcdStatic.textContent = 'PAUSED';
+    }
+    refreshPlayingHighlight();
+    updateDial();
+  }
+
+  playBtn.addEventListener('click', ()=>{
+    if(!currentStation) return;
+    if(isPlaying){ audio.pause(); isPlaying = false; }
+    else { resumeAudioGraph(); audio.play(); isPlaying = true; }
+    updatePlayerUI();
+  });
+  pFav.addEventListener('click', ()=>{ if(currentStation) toggleFavorite(currentStation.stationuuid); });
+  ejectBtn.addEventListener('click', ()=>{
+    audio.pause(); audio.removeAttribute('src'); audio.load();
+    currentStation = null; isPlaying = false; updatePlayerUI();
+  });
+  volSlider.addEventListener('input', ()=>{ audio.volume = parseFloat(volSlider.value); });
+  audio.addEventListener('waiting', ()=>{ if(currentStation) pSub.textContent = 'Buffering…'; });
+  audio.addEventListener('playing', ()=>{ if(currentStation) updatePlayerUI(); });
+  audio.addEventListener('error', ()=>{
+    isPlaying = false; pSub.textContent = 'Signal lost — try another station'; updatePlayerUI();
+  });
+
+  document.getElementById('ctaStart').addEventListener('click', ()=>{
+    document.getElementById('stations').scrollIntoView({behavior:'smooth'});
+  });
+  document.getElementById('ctaSurprise').addEventListener('click', playRandom);
+  document.getElementById('btnSurprise2').addEventListener('click', playRandom);
+
+  const BAR_COUNT = 30;
+  let bars = new Array(BAR_COUNT).fill(2);
+  function hexToRgb(hex){ const v = parseInt(hex.slice(1),16); return [(v>>16)&255, (v>>8)&255, v&255]; }
+  function drawViz(){
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0,0,w,h);
+    const barW = w / BAR_COUNT;
+    const [r,g,b] = hexToRgb(currentAccent);
+    for(let i=0;i<BAR_COUNT;i++){
+      let target = 2;
+      if(isPlaying){
+        const wave = Math.sin(Date.now()/220 + i*0.6) * 0.5 + 0.5;
+        target = 3 + wave * (h*0.55) + Math.random()*(h*0.25);
+      }
+      bars[i] += (target - bars[i]) * 0.35;
+      const barH = Math.max(2, bars[i]);
+      ctx.fillStyle = `rgba(${r},${g},${b},${0.45 + (barH/h)*0.55})`;
+      ctx.fillRect(i*barW + 1, h-barH, barW-2, barH);
+    }
+    requestAnimationFrame(drawViz);
+  }
+  requestAnimationFrame(drawViz);
+
+  let searchTimer = null;
+  searchInput.addEventListener('input', ()=>{
+    clearTimeout(searchTimer);
+    const q = searchInput.value.trim();
+    searchTimer = setTimeout(()=>{
+      if(q.length===0){ loadCountries(); return; }
+      if(q.length < 2) return;
+      activeTag = null; renderChips();
+      countrySelect.value = '';
+      runSearch(q);
+    }, 450);
+  });
+  countrySelect.addEventListener('change', ()=>{
+    if(!countrySelect.value){ loadCountries(); return; }
+    searchInput.value = ''; activeTag = null; renderChips();
+    loadCountryStations({name: countrySelect.value}, countrySelect.value);
+  });
+
+  async function loadStats(){
+    try{
+      const s = await apiGet('/json/stats');
+      const stations = s.stations ? s.stations.toLocaleString() : '30,000+';
+      const countries = s.countries || '240+';
+      navStat.textContent = `${stations} live stations worldwide`;
+      document.getElementById('statStations').textContent = stations;
+      document.getElementById('statCountries').textContent = countries;
+      document.getElementById('statTags').textContent = s.tags ? s.tags.toLocaleString() : '90,000+';
+    }catch(e){
+      navStat.textContent = 'thousands of live stations worldwide';
+    }
+  }
+
+  renderChips();
+  loadStats();
+  loadCountries();
+})();
+</script>
+</body>
+</html>
