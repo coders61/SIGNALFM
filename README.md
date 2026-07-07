@@ -7,11 +7,15 @@ A futuristic web radio player that lets you discover and stream live internet ra
 Built as a single-page application with a modern cyberpunk-inspired interface featuring animated radio controls, live station discovery, glassmorphism effects, and an integrated streaming player.
 
 
+## Preview
+
 <p align="center">
   <img src="Screenshot.png" width="70%">
 </p>
+
 ---
 
+ 
 # ✨ Features
 
 - 🌎 Browse radio stations from around the world
