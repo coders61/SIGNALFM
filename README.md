@@ -31,7 +31,7 @@ Built as a single-page application with a modern cyberpunk-inspired interface fe
 # 📷 ScreenShot
  
 <p align="center">
-  <img src="Screenshot.png" width="100%">
+  <img src="Screenshot.png" width="70%">
 </p>
 ---
 
