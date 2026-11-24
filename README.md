@@ -26,7 +26,9 @@
 
 ## 📑 Contents
 
+- [What's new](#-whats-new)
 - [Features](#-features)
+- [Add your own station](#-add-your-own-station)
 - [Install it as an app](#-install-it-as-an-app)
 - [Keyboard shortcuts](#️-keyboard-shortcuts)
 - [Run it yourself](#-run-it-yourself)
@@ -36,6 +38,22 @@
 - [Roadmap](#-roadmap)
 - [Contributing](#-contributing)
 - [License](#-license)
+
+---
+
+## 🆕 What's new
+
+**v2.1: My stations**
+- Add any radio stream yourself, even ones that aren't in the directory
+- Test a link before saving it, then edit or delete it any time
+- Paste a stream link into the search box to add it instantly
+- Export / import now backs up your own stations too
+
+**v2.0: The big upgrade**
+- Trending, Top voted and Near you charts, 24 genres and sorting
+- 5-band EQ, real audio visualizer, sleep timer, auto-reconnect
+- Saved favorites, history, share links, dark/light themes
+- Installable as an app, with lock-screen controls and keyboard shortcuts
 
 ---
 
@@ -64,7 +82,8 @@
 ### ⭐ Your library
 - **Favorites saved permanently** in your browser
 - 🕘 **Recently played** history
-- ⬇⬆ **Export / import favorites** as a JSON file to move them between devices
+- 📻 **My stations**: add any radio stream link yourself (MP3, AAC, OGG, HLS, or `.pls`/`.m3u` playlists), test it, then edit or delete it later
+- ⬇⬆ **Export / import your library** (favorites + your own stations) as a JSON file to move it between devices
 - ↗ **Share links** to any station (`…/#station=<id>`)
 - 👍 **Vote** for stations you love
 - Remembers your last station, volume, EQ and theme
@@ -74,6 +93,25 @@
 - 📲 **Installable** on phone and desktop (PWA)
 - Fully responsive and accessible (keyboard & screen-reader friendly)
 - ⚡ No frameworks, no build step, no backend: just HTML, CSS and JavaScript
+
+---
+
+## 📻 Add your own station
+
+Can't find a station? If you have its stream link, you can add it yourself.
+
+1. Open the **📻 My stations** tab and click **＋ Add a station**, or press <kbd>A</kbd>.
+   *Shortcut:* paste the link straight into the search box and click **＋ Add as a station**.
+2. Paste the **stream link**. The app accepts:
+   - direct audio streams (`.mp3`, `.aac`, `.ogg`, …)
+   - HLS streams (`.m3u8`)
+   - playlist files (`.pls`, `.m3u`), which are read automatically
+3. Optionally add a name, a logo link and genres.
+4. Click **▶ Test it** to check that it plays, then **Save station**.
+
+Your stations get a **MINE** badge and work like any other station: favorite them, skip through them with next/previous, and control them from the lock screen. To change or remove one, click the **ⓘ** on its card and choose **✎ Edit** or **🗑 Delete**.
+
+> 💡 **Where do I find a stream link?** Many station websites list it under "Listen", "Stream" or "Player". On secure sites such as GitHub Pages, the link must start with `https://`.
 
 ---
 
@@ -103,6 +141,7 @@ SIGNAL•FM can be installed like a normal app, with its own icon and window.
 | <kbd>E</kbd> | Equalizer |
 | <kbd>S</kbd> | Cycle the sleep timer |
 | <kbd>/</kbd> | Search |
+| <kbd>A</kbd> | Add your own station |
 | <kbd>Esc</kbd> | Close panels |
 
 ---
@@ -154,7 +193,8 @@ SIGNALFM/
 - **Station directory:** [Radio Browser](https://www.radio-browser.info/), a free, community-maintained database of radio stations. The app finds the live API servers and switches automatically if one is down.
 - **Playback:** each stream is first tried through the Web Audio API, which powers the EQ and real visualizer. If the station doesn't allow that (a browser security rule called CORS), it falls back to normal playback, so the station still plays.
 - **HTTPS:** browsers block insecure `http://` audio on secure sites like GitHub Pages. With **Secure streams only** on (the default), those stations are hidden so you don't hit dead ends.
-- **Privacy:** favorites, history and settings are stored only in your browser (`localStorage`). There are no accounts, analytics or cookies.
+- **Your own stations:** saved alongside your favorites. They never touch the shared directory, so only you can see them.
+- **Privacy:** favorites, your own stations, history and settings are stored only in your browser (`localStorage`). There are no accounts, analytics or cookies.
 
 ---
 
@@ -167,7 +207,9 @@ SIGNALFM/
 | The EQ doesn't change the sound | That station doesn't allow audio processing. The EQ panel tells you when this happens. |
 | Audio stops when my iPhone locks | Make sure **Enhanced audio** is off in Settings (it's off by default on iPhone/iPad). |
 | I don't see new changes after an update | Refresh the page twice, or close and reopen the installed app. |
-| My favorites are gone on another device | Favorites are saved per browser. Use **Export** in Settings, then **Import** on the other device. |
+| My favorites are gone on another device | Your library is saved per browser. Use **Export library** in Settings, then **Import library** on the other device. |
+| My own station won't play | Use **Test it** in the add-station form. The link must be a direct audio stream, and on secure sites like GitHub Pages it must start with `https://`. |
+| A station I want isn't in the directory | Open the **📻 My stations** tab and add its stream link, or just paste the link into the search box. |
 
 ### Known limitations
 - **Song titles** (what's playing right now) can't be read from radio streams in a browser without a separate proxy server.
@@ -177,17 +219,20 @@ SIGNALFM/
 
 ## 🛣 Roadmap
 
-- [x] Saved favorites & recently played
-- [x] Trending & top-voted charts
-- [x] Light theme
-- [x] Installable app (PWA)
-- [x] Sleep timer, 5-band EQ, keyboard shortcuts
-- [x] Share links & favorites export/import
-- [ ] Now-playing song titles (optional proxy)
-- [ ] World map browsing
-- [ ] Multi-language interface
-- [ ] Add your own custom stream URLs
-- [ ] Cloud sync
+### ✅ Done
+- ✅ Saved favorites & recently played
+- ✅ Trending & top-voted charts
+- ✅ Light theme
+- ✅ Installable app (PWA)
+- ✅ Sleep timer, 5-band EQ, keyboard shortcuts
+- ✅ Share links & favorites export/import
+- ✅ Add your own custom stream URLs
+
+### 🔜 Coming next
+- 🔜 Multi-language interface
+- 🔜 World map browsing
+- 🔜 Now-playing song titles (needs an optional proxy server)
+- 🔜 Cloud sync for favorites across devices
 
 Have an idea? [Open an issue](https://github.com/coders61/SIGNALFM/issues)!
 

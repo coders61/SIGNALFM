@@ -88,10 +88,12 @@
   function shuffle(a){ a = a.slice(); for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
   function stationName(st){ return (st && st.name || '').trim() || 'Untitled station'; }
   function slim(st){
-    const keep = ['stationuuid','name','url','url_resolved','favicon','tags','country','countrycode','state','language','codec','bitrate','hls','homepage','votes','clickcount'];
+    const keep = ['stationuuid','name','url','url_resolved','favicon','tags','country','countrycode','state','language','codec','bitrate','hls','homepage','votes','clickcount','custom'];
     const o = {}; keep.forEach(k => { if(st[k] !== undefined) o[k] = st[k]; }); return o;
   }
+  const isCustom = (st) => !!(st && st.custom);
   function metaLine(st){
+    if(isCustom(st) && !st.country && !st.bitrate) return tagsOf(st).length ? `My station · ${tagsOf(st)[0]}` : `My station · ${hostOf(st.url) || 'custom stream'}`;
     return [st.country || (st.countrycode ? countryName(st.countrycode) : ''), st.bitrate ? `${st.bitrate}kbps` : '', (st.codec || '').toUpperCase()]
       .filter(Boolean).join(' · ');
   }
@@ -119,10 +121,11 @@
 
   let favorites = (store.get('favorites', []) || []).filter(s => s && s.stationuuid);
   let recent = (store.get('recent', []) || []).filter(s => s && s.stationuuid);
+  let myStations = (store.get('custom', []) || []).filter(s => s && s.stationuuid && safeUrl(s.url));
   const voted = store.get('voted', {});
   const corsBlocked = new Set(store.get('corsBlocked', []));
   const stationCache = new Map();
-  [...favorites, ...recent].forEach(s => stationCache.set(s.stationuuid, s));
+  [...favorites, ...recent, ...myStations].forEach(s => stationCache.set(s.stationuuid, s));
 
   let currentStation = null;
   let playState = 'idle'; // idle | connecting | playing | paused | error
@@ -251,11 +254,12 @@
     ];
     if(localCountry) t.push({ id:'local', label:`${flagEmoji(localCountry)} Near you` });
     t.push({ id:'favorites', label:'★ Favorites', count: favorites.length });
+    t.push({ id:'mine', label:'📻 My stations', count: myStations.length });
     t.push({ id:'recent', label:'🕘 Recent', count: recent.length });
     return t;
   }
   function renderTabs(){
-    const activeTab = ['countries','country','trending','topvoted','local','favorites','recent'].includes(view.kind)
+    const activeTab = ['countries','country','trending','topvoted','local','favorites','mine','recent'].includes(view.kind)
       ? (view.kind === 'country' ? 'countries' : view.kind) : null;
     el.tabRow.innerHTML = tabsDef().map(t => `
       <button class="tab ${activeTab === t.id ? 'active' : ''}" role="tab" aria-selected="${activeTab === t.id}" data-tab="${t.id}">
@@ -417,6 +421,33 @@
   function showRecent(){
     showLocalList('recent', recent, 'Recently played', 'NOTHING PLAYED YET', 'Stations you listen to will show up here.');
   }
+  function showMine(){
+    showLocalList('mine', myStations, `My stations (${myStations.length})`, 'NO STATIONS OF YOUR OWN YET',
+      'Add any radio stream link: a local station, an internet stream, anything that plays.');
+    el.grid.insertAdjacentHTML('afterbegin', `<button class="card add-card" data-add-station>
+      <span class="plus">＋</span><span class="t">Add a station</span><span class="s">Paste any stream link</span></button>`);
+  }
+  function refreshLibraryView(){
+    if(view.kind === 'mine') showMine();
+    else if(view.kind === 'favorites') showFavorites();
+    else if(view.kind === 'recent') showRecent();
+  }
+  // Pasting a stream link into search offers to add it instead of searching for it.
+  function showPasteHint(url){
+    view.token++;
+    Object.assign(view, { kind:'search', params:null, sortable:false, genre:null, done:true });
+    setNav(); el.listTools.hidden = true; setLoadMore(false);
+    setLabel('Stream link detected');
+    cardEls.clear(); currentList = [];
+    el.grid.setAttribute('aria-busy', 'false');
+    el.grid.innerHTML = `<div class="empty-state"><div class="big">THAT LOOKS LIKE A STREAM LINK</div>
+      <div class="small">Add it to My stations to play it and keep it.</div>
+      <button class="btn btn-primary btn-sm" data-add-url="${escapeHtml(url)}">＋ Add as a station</button></div>`;
+  }
+  function runQuery(q){
+    el.countrySelect.value = '';
+    if(/^https?:\/\/\S+$/i.test(q)) showPasteHint(q); else showSearch(q);
+  }
   function clearFilters(){ el.search.value = ''; el.searchClear.hidden = true; el.kbdHint.hidden = false; el.countrySelect.value = ''; }
 
   // ---------------------------------------------------------------- station cards
@@ -424,7 +455,7 @@
     const uuid = st.stationuuid;
     const fav = isFav(uuid);
     const tags = tagsOf(st).slice(0, 3);
-    const hq = st.bitrate >= 256 ? '<span class="badge-hq">HQ</span>' : '';
+    const hq = isCustom(st) ? '<span class="badge-mine">MINE</span>' : st.bitrate >= 256 ? '<span class="badge-hq">HQ</span>' : '';
     return `<article class="card" tabindex="0" role="button" data-uuid="${escapeHtml(uuid)}" style="--accent:${accentCss(uuid)}" aria-label="Play ${escapeHtml(stationName(st))}">
       <div class="card-actions">
         <button class="icon-btn info-btn" aria-label="Station info" title="Station info"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button>
@@ -467,6 +498,9 @@
   }, true);
 
   el.grid.addEventListener('click', (e) => {
+    if(e.target.closest('[data-add-station]')){ openCustomEditor(); return; }
+    const addUrl = e.target.closest('[data-add-url]');
+    if(addUrl){ openCustomEditor({ url: addUrl.dataset.addUrl }); return; }
     const country = e.target.closest('[data-country]');
     if(country){ showCountry(country.dataset.country); return; }
     const card = e.target.closest('.card[data-uuid]');
@@ -662,7 +696,7 @@
     setState('playing');
     clearTimeout(stableTimer);
     stableTimer = setTimeout(() => { reconnects = 0; }, 30000);
-    if(!opts.reconnect){ registerClick(st.stationuuid); addRecent(st); }
+    if(!opts.reconnect){ if(!isCustom(st)) registerClick(st.stationuuid); addRecent(st); }
     else toast('Reconnected ✓');
   }
   function scheduleReconnect(){
@@ -1054,7 +1088,12 @@
     const fav = isFav(uuid);
     const home = safeUrl(st.homepage);
     const loc = [st.state, st.country || (st.countrycode ? countryName(st.countrycode) : '')].filter(Boolean).join(', ');
-    const stats = [
+    const mine = isCustom(st);
+    const stats = mine ? [
+      ['Server', hostOf(st.url) || '—'],
+      ['Type', Number(st.hls) === 1 ? 'HLS stream' : 'Audio stream'],
+      ['Frequency', `${freqFor(uuid)} SFM`],
+    ] : [
       ['Codec', (st.codec || '—').toUpperCase()],
       ['Bitrate', st.bitrate ? `${st.bitrate} kbps` : '—'],
       ['Language', st.language || '—'],
@@ -1069,14 +1108,16 @@
         <img class="detail-art" alt="" referrerpolicy="no-referrer" src="${escapeHtml(safeUrl(st.favicon) || FALLBACK_ICON)}">
         <div style="min-width:0">
           <div class="detail-name" id="detailName">${escapeHtml(stationName(st))}</div>
-          <div class="detail-loc">${flagEmoji(st.countrycode)} ${escapeHtml(loc || 'Unknown location')}</div>
+          <div class="detail-loc">${mine ? '📻 My station' : `${flagEmoji(st.countrycode)} ${escapeHtml(loc || 'Unknown location')}`}</div>
         </div>
       </div>
       <div class="detail-actions">
         <button class="btn btn-primary btn-sm" data-act="play">${isCur ? '❚❚ Pause' : '▶ Play'}</button>
         <button class="btn btn-ghost btn-sm" data-act="fav">${fav ? '★ Saved' : '☆ Favorite'}</button>
+        ${mine ? `<button class="btn btn-ghost btn-sm" data-act="edit">✎ Edit</button>
+        <button class="btn btn-ghost btn-sm" data-act="delete">🗑 Delete</button>` : `
         <button class="btn btn-ghost btn-sm" data-act="vote" ${voted[uuid] ? 'disabled' : ''}>${voted[uuid] ? '👍 Voted' : '👍 Vote'}</button>
-        <button class="btn btn-ghost btn-sm" data-act="share">↗ Share</button>
+        <button class="btn btn-ghost btn-sm" data-act="share">↗ Share</button>`}
       </div>
       <div class="detail-grid">${stats.map(([k, v]) => `<div class="detail-stat"><div class="k">${k}</div><div class="v" title="${escapeHtml(v)}">${escapeHtml(v)}</div></div>`).join('')}</div>
       ${tagsOf(st).length ? `<div class="detail-tags">${tagsOf(st).slice(0, 16).map(t => `<button class="tag-pill" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</button>`).join('')}</div>` : ''}
@@ -1111,6 +1152,8 @@
         }catch(err){ act.disabled = false; toast('Could not send vote'); }
         break;
       case 'share': shareStation(st); break;
+      case 'edit': el.detailDlg.close(); openCustomEditor(st); break;
+      case 'delete': if(deleteCustom(st)) el.detailDlg.close(); break;
       case 'copy': copyText(st.url_resolved || st.url, 'Stream URL copied'); break;
     }
   });
@@ -1131,17 +1174,125 @@
     d.addEventListener('click', (e) => { if(e.target === d || e.target.closest('[data-close]')) d.close(); });
   });
 
+  // ---------------------------------------------------------------- my stations (custom stream URLs)
+  const customDlg = $('#customDlg');
+  const cNote = $('#cNote');
+  let draftId = null, editingId = null;
+  function newCustomId(){
+    const rnd = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+    return 'custom-' + rnd;
+  }
+  function setCNote(msg, ok){ cNote.hidden = !msg; cNote.textContent = msg || ''; cNote.classList.toggle('ok', !!ok); }
+  function openCustomEditor(st){
+    editingId = st && st.stationuuid && isCustom(st) ? st.stationuuid : null;
+    draftId = editingId || newCustomId();
+    $('#customTitle').textContent = editingId ? 'Edit station' : 'Add a station';
+    $('#cSave').textContent = editingId ? 'Save changes' : 'Save station';
+    $('#cUrl').value = (st && st.url) || '';
+    $('#cName').value = (st && st.name) || '';
+    $('#cLogo').value = (st && st.favicon) || '';
+    $('#cTags').value = (st && st.tags) || '';
+    setCNote('');
+    closePops();
+    if(!customDlg.open) customDlg.showModal();
+    ($('#cUrl').value ? $('#cName') : $('#cUrl')).focus();
+  }
+  // .pls / .m3u files are playlists that point at the real stream: read the first link out of them.
+  async function resolvePlaylist(url){
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 6000);
+    try{
+      const res = await fetch(url, { signal: ctrl.signal });
+      const text = (await res.text()).slice(0, 20000);
+      const m = text.match(/^\s*(?:File\d+\s*=\s*)?(https?:\/\/\S+)/im);
+      return m ? m[1].trim() : null;
+    }catch(e){ return null; }
+    finally{ clearTimeout(t); }
+  }
+  async function readDraft(){
+    let url = $('#cUrl').value.trim();
+    if(!safeUrl(url)){ setCNote('Enter a stream link that starts with http:// or https://'); $('#cUrl').focus(); return null; }
+    if(/\.(pls|m3u)($|\?)/i.test(url)){
+      setCNote('Reading playlist…', true);
+      const real = await resolvePlaylist(url);
+      if(real){ url = real; $('#cUrl').value = real; setCNote(''); }
+      else setCNote("Couldn't read that playlist file, so it will be tried as a stream.");
+    }
+    const tags = $('#cTags').value.split(',').map(t => t.trim().toLowerCase()).filter(Boolean).slice(0, 8).join(',');
+    let name = $('#cName').value.trim();
+    if(!name){ name = hostOf(url).replace(/^www\./, '') || 'My station'; $('#cName').value = name; }
+    return {
+      stationuuid: draftId, custom: true, name, url, url_resolved: url,
+      favicon: safeUrl($('#cLogo').value), tags,
+      hls: /\.m3u8($|\?)/i.test(url) ? 1 : 0,
+    };
+  }
+  function replaceEverywhere(st){
+    const swap = (list) => list.map(s => s.stationuuid === st.stationuuid ? slim(st) : s);
+    favorites = swap(favorites); recent = swap(recent);
+    store.set('favorites', favorites); store.set('recent', recent);
+    const last = store.get('last', null);
+    if(last && last.stationuuid === st.stationuuid) store.set('last', slim(st));
+    stationCache.set(st.stationuuid, st);
+    if(currentStation && currentStation.stationuuid === st.stationuuid){ currentStation = st; lastArt = null; renderPlayer(); }
+  }
+  $('#cTest').addEventListener('click', async () => {
+    const btn = $('#cTest');
+    const d = await readDraft(); if(!d) return;
+    btn.disabled = true;
+    setCNote('Connecting…', true);
+    queue = [];
+    const ok = await tune(d);
+    btn.disabled = false;
+    if(!customDlg.open) return;
+    if(ok) setCNote('✓ It works! Save it to keep it.', true);
+    else if(playState === 'paused') setCNote('Press play in the player to start it.', true);
+    else setCNote(PAGE_SECURE && /^http:/i.test(d.url)
+      ? "Couldn't play it. This is an http:// link, and secure sites can only play https:// streams."
+      : "Couldn't play this link. Check that it's a direct audio stream and that it's online.");
+  });
+  $('#customForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const d = await readDraft(); if(!d) return;
+    const i = myStations.findIndex(s => s.stationuuid === d.stationuuid);
+    if(i >= 0) myStations[i] = d; else myStations.unshift(d);
+    store.set('custom', myStations);
+    replaceEverywhere(d);
+    customDlg.close();
+    toast(i >= 0 ? 'Station updated' : `📻 Added “${d.name}” to My stations`);
+    clearFilters();
+    showMine();
+  });
+  function deleteCustom(st){
+    if(!window.confirm(`Delete “${stationName(st)}” from My stations?`)) return false;
+    const id = st.stationuuid;
+    myStations = myStations.filter(s => s.stationuuid !== id);
+    favorites = favorites.filter(s => s.stationuuid !== id);
+    recent = recent.filter(s => s.stationuuid !== id);
+    store.set('custom', myStations); store.set('favorites', favorites); store.set('recent', recent);
+    const last = store.get('last', null);
+    if(last && last.stationuuid === id) store.set('last', null);
+    queue = queue.filter(s => s.stationuuid !== id);
+    el.statFavs.textContent = favorites.length;
+    renderTabs(); refreshLibraryView(); renderPlayer();
+    toast('Station deleted');
+    return true;
+  }
+
   // ---------------------------------------------------------------- settings dialog
   function applyTheme(){
     document.documentElement.dataset.theme = settings.theme;
     el.settingsDlg.querySelectorAll('#themeSeg button').forEach(b => b.classList.toggle('active', b.dataset.v === settings.theme));
     accentRgbCache.key = '';
   }
+  function updateLibSummary(){
+    $('#libSummary').textContent = `${favorites.length} favorites · ${myStations.length} of your own stations · ${recent.length} recently played. Saved in this browser only.`;
+  }
   function openSettings(){
     $('#optHttps').checked = settings.httpsOnly;
     $('#optEnhanced').checked = settings.enhanced;
     $('#optReconnect').checked = settings.reconnect;
-    $('#libSummary').textContent = `${favorites.length} favorites · ${recent.length} recently played — saved in this browser only.`;
+    updateLibSummary();
     applyTheme();
     el.settingsDlg.showModal();
   }
@@ -1159,9 +1310,9 @@
   });
   $('#optReconnect').addEventListener('change', (e) => { settings.reconnect = e.target.checked; saveSettings(); });
   $('#exportBtn').addEventListener('click', () => {
-    const blob = new Blob([JSON.stringify({ app: 'SIGNAL•FM', version: 2, exported: new Date().toISOString(), favorites }, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify({ app: 'SIGNAL•FM', version: 3, exported: new Date().toISOString(), favorites, custom: myStations }, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = 'signalfm-favorites.json';
+    a.href = URL.createObjectURL(blob); a.download = 'signalfm-library.json';
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   });
@@ -1176,17 +1327,23 @@
       let added = 0;
       list.forEach(s => { if(!isFav(s.stationuuid)){ favorites.push(slim(s)); stationCache.set(s.stationuuid, s); added++; } });
       store.set('favorites', favorites);
+      const mine = (Array.isArray(data.custom) ? data.custom : [])
+        .filter(s => s && typeof s.stationuuid === 'string' && safeUrl(s.url))
+        .map(s => ({ ...slim(s), custom: true, name: String(s.name || hostOf(s.url)).slice(0, 80) }));
+      let addedMine = 0;
+      mine.forEach(s => { if(!myStations.some(m => m.stationuuid === s.stationuuid)){ myStations.push(s); stationCache.set(s.stationuuid, s); addedMine++; } });
+      store.set('custom', myStations);
+      refreshLibraryView();
       el.statFavs.textContent = favorites.length;
       renderTabs();
-      if(view.kind === 'favorites') showFavorites();
-      toast(`Imported ${added} station${added === 1 ? '' : 's'}`);
-      $('#libSummary').textContent = `${favorites.length} favorites · ${recent.length} recently played — saved in this browser only.`;
-    }catch(err){ toast('That file is not a valid favorites export'); }
+      toast(`Imported ${added} favorite${added === 1 ? '' : 's'}${addedMine ? ` and ${addedMine} of your own station${addedMine === 1 ? '' : 's'}` : ''}`);
+      updateLibSummary();
+    }catch(err){ toast('That file is not a valid SIGNAL•FM export'); }
   });
   $('#clearRecentBtn').addEventListener('click', () => {
     recent = []; store.set('recent', recent); renderTabs();
     if(view.kind === 'recent') showRecent();
-    $('#libSummary').textContent = `${favorites.length} favorites · 0 recently played — saved in this browser only.`;
+    updateLibSummary();
     toast('History cleared');
   });
   $('#settingsBtn').addEventListener('click', openSettings);
@@ -1223,7 +1380,7 @@
   el.tabRow.addEventListener('click', (e) => {
     const t = e.target.closest('[data-tab]'); if(!t) return;
     clearFilters();
-    ({ countries: showCountries, trending: showTrending, topvoted: showTopVoted, local: showLocal, favorites: showFavorites, recent: showRecent })[t.dataset.tab]();
+    ({ countries: showCountries, trending: showTrending, topvoted: showTopVoted, local: showLocal, favorites: showFavorites, mine: showMine, recent: showRecent })[t.dataset.tab]();
   });
   el.chipRow.addEventListener('click', (e) => {
     const c = e.target.closest('[data-genre]'); if(!c) return;
@@ -1246,12 +1403,11 @@
     searchTimer = setTimeout(() => {
       if(!q){ showCountries(); return; }
       if(q.length < 2) return;
-      el.countrySelect.value = '';
-      showSearch(q);
+      runQuery(q);
     }, 380);
   });
   el.search.addEventListener('keydown', (e) => {
-    if(e.key === 'Enter'){ clearTimeout(searchTimer); const q = el.search.value.trim(); if(q){ el.countrySelect.value = ''; showSearch(q); } }
+    if(e.key === 'Enter'){ clearTimeout(searchTimer); const q = el.search.value.trim(); if(q) runQuery(q); }
     if(e.key === 'Escape'){ el.search.blur(); }
   });
   el.search.addEventListener('focus', () => { el.kbdHint.hidden = true; });
@@ -1286,6 +1442,7 @@
       case 's': cycleSleep(); break;
       case '/': e.preventDefault(); scrollToList(); el.search.focus({ preventScroll: true }); break;
       case '?': el.shortcutsDlg.showModal(); break;
+      case 'a': e.preventDefault(); openCustomEditor(); break;
       case 'ArrowUp': if(e.shiftKey){ e.preventDefault(); nudgeVolume(0.05); } break;
       case 'ArrowDown': if(e.shiftKey){ e.preventDefault(); nudgeVolume(-0.05); } break;
       default: return;

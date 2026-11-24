@@ -193,6 +193,31 @@
   <div class="dlg-body" id="detailBody"></div>
 </dialog>
 
+<dialog id="customDlg" aria-labelledby="customTitle">
+  <div class="dlg-head"><div class="dlg-title" id="customTitle">Add a station</div><button class="icon-btn" data-close aria-label="Close">✕</button></div>
+  <form class="dlg-body" id="customForm" novalidate>
+    <label class="field"><span>Stream link <em>*</em></span>
+      <input id="cUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://example.com/live.mp3">
+      <small>Direct audio streams (MP3, AAC, OGG), HLS (.m3u8) and .pls / .m3u playlist links all work.</small>
+    </label>
+    <label class="field"><span>Station name</span>
+      <input id="cName" maxlength="80" autocomplete="off" placeholder="My favorite station">
+    </label>
+    <label class="field"><span>Logo link</span>
+      <input id="cLogo" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://… (optional)">
+    </label>
+    <label class="field"><span>Genres</span>
+      <input id="cTags" maxlength="120" autocomplete="off" placeholder="jazz, chill (optional)">
+    </label>
+    <div class="pop-note" id="cNote" role="status" hidden></div>
+    <div class="detail-actions">
+      <button type="button" class="btn btn-ghost btn-sm" id="cTest">▶ Test it</button>
+      <button type="submit" class="btn btn-primary btn-sm" id="cSave">Save station</button>
+    </div>
+    <div class="desc" style="font-size:12px;color:var(--dim)">Saved in this browser only. Use <b>Export</b> in Settings to back them up.</div>
+  </form>
+</dialog>
+
 <dialog id="settingsDlg" aria-labelledby="settingsTitle">
   <div class="dlg-head"><div class="dlg-title" id="settingsTitle">Settings</div><button class="icon-btn" data-close aria-label="Close">✕</button></div>
   <div class="dlg-body">
@@ -219,8 +244,8 @@
       <div><div class="lbl">Your library</div><div class="desc" id="libSummary">Saved in this browser only.</div></div>
     </div>
     <div class="detail-actions">
-      <button class="btn btn-ghost btn-sm" id="exportBtn">⬇ Export favorites</button>
-      <button class="btn btn-ghost btn-sm" id="importBtn">⬆ Import favorites</button>
+      <button class="btn btn-ghost btn-sm" id="exportBtn">⬇ Export library</button>
+      <button class="btn btn-ghost btn-sm" id="importBtn">⬆ Import library</button>
       <button class="btn btn-ghost btn-sm" id="clearRecentBtn">Clear history</button>
       <input type="file" id="importFile" accept="application/json,.json" hidden>
     </div>
@@ -241,6 +266,7 @@
       <span><kbd>E</kbd></span><span>Equalizer</span>
       <span><kbd>S</kbd></span><span>Sleep timer</span>
       <span><kbd>/</kbd></span><span>Search</span>
+      <span><kbd>A</kbd></span><span>Add your own station</span>
       <span><kbd>Esc</kbd></span><span>Close panels</span>
     </div>
   </div>

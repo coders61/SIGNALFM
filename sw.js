@@ -1,6 +1,6 @@
 /* SIGNAL•FM service worker: caches the app shell so it opens instantly and works offline.
    Radio streams and API calls always go to the network. Bump VERSION when you change files. */
-const VERSION = 'signalfm-v2.0.0';
+const VERSION = 'signalfm-v2.1.0';
 const SHELL = ['./', 'index.html', 'css/style.css', 'js/app.js', 'manifest.webmanifest', 'icons/icon.svg'];
 
 self.addEventListener('install', (e) => {
