@@ -7,7 +7,7 @@
 **▶ Live app: https://coders61.github.io/SIGNALFM/**
 
 <p align="center">
-  <img src="Screenshot.png" width="80%" alt="SIGNAL•FM screenshot">
+  <img src="screenshot.png" width="80%" alt="SIGNAL•FM screenshot">
 </p>
 
 ---
