@@ -2,322 +2,165 @@
 
 > Tune the World, Live.
 
-A futuristic web radio player that lets you discover and stream live internet radio stations from around the world using the free Radio Browser API.
+**A free, open-source web radio app.** Stream 50,000+ live radio stations from 200+ countries, right in your browser. No account, no ads, no tracking, no install required (but you *can* install it as an app).
 
-Built as a single-page application with a modern cyberpunk-inspired interface featuring animated radio controls, live station discovery, glassmorphism effects, and an integrated streaming player.
-
-
-## Preview
+**▶ Live app: https://coders61.github.io/SIGNALFM/**
 
 <p align="center">
-  <img src="Screenshot.png" width="70%">
+  <img src="Screenshot.png" width="80%" alt="SIGNAL•FM screenshot">
 </p>
 
 ---
 
- 
-# ✨ Features
+## ✨ Features
 
-- 🌎 Browse radio stations from around the world
-- 🔍 Search live stations instantly
-- 🎲 Random Station mode
-- ❤️ Favorite stations
-- 🎵 Built-in audio player
-- 🎚️ 3-Band Equalizer
-- 🔊 Volume control
-- 📡 Live broadcasting indicators
-- 📻 Animated tuning dial
-- 📺 LCD-style "Now Playing" display
-- 🎨 Dynamic accent colours
-- ⚡ Fast and lightweight
-- 📱 Fully responsive
-- 🌙 Cyberpunk-inspired UI
-- 🚀 No backend required
+**Discover**
+- 🌍 Browse 200+ countries, or jump straight to one from the dropdown
+- 🔥 **Trending** and 👍 **Top voted** charts, updated live
+- 📍 **Near you**: popular stations in your country
+- 🎧 24 one-tap genres (Jazz, Lo-Fi, Hip-Hop, News, Classical, …)
+- 🔍 Smart search across station names *and* genres
+- ↕️ Sort by popularity, trending, votes, quality or name
+- 🎲 **Surprise me**: finds a random station that is actually live
 
----
+**Listen**
+- ▶️ Reliable playback with automatic fallback between stream modes
+- 📡 HLS (`.m3u8`) stream support
+- 🔁 **Auto-reconnect** when a stream drops
+- 🎚️ **5-band equalizer** with presets (Bass+, Vocal, Treble+, Loud, Night)
+- 📊 **Real audio visualizer** (driven by the live audio when the station allows it)
+- ⏾ **Sleep timer** with a gentle fade-out
+- ⏮ ⏭ Next / previous station
+- 🔒 Lock-screen & media-key controls (Media Session API)
+- ⌨️ Keyboard shortcuts (press <kbd>?</kbd>)
 
-# 🚀 Technologies
+**Your library**
+- ★ **Favorites saved permanently** in your browser
+- 🕘 **Recently played** history
+- ⬇⬆ Export / import favorites as JSON (move them between devices)
+- ↗ **Share links** to any station (`…/#station=<id>`)
+- 👍 Vote for stations you love
+- ▶ Remembers your last station, volume, EQ and theme
 
-- HTML5
-- CSS3
-- Vanilla JavaScript
-- Web Audio API
-- Fetch API
-- Radio Browser API
-- Google Fonts
-
-No frameworks.
-
-No build tools.
-
-No dependencies.
-
-Simply open the HTML file in your browser.
+**App**
+- 🌗 Dark, light & auto themes
+- 📲 Installable **PWA** (works like a native app on phone & desktop)
+- 📱 Fully responsive, accessible (keyboard & screen-reader friendly)
+- ⚡ No frameworks, no build step, no backend
 
 ---
 
-# 📡 Powered By
+## ⌨️ Keyboard shortcuts
 
-SIGNAL FM uses the free community-maintained Radio Browser project.
-
-Website:
-
-https://www.radio-browser.info/
-
-Features provided by Radio Browser include:
-
-- Thousands of live radio stations
-- Hundreds of countries
-- Community-maintained directory
-- Multiple API mirrors
-- Completely free API
-
----
-
-# 🎛 Main Features
-
-## Hero Section
-
-- Animated radio tuning dial
-- Live frequency display
-- Dynamic sweep needle
-- Quick Start button
-- Random Station button
+| Key | Action |
+| --- | --- |
+| <kbd>Space</kbd> / <kbd>K</kbd> | Play / pause |
+| <kbd>N</kbd> / <kbd>P</kbd> | Next / previous station |
+| <kbd>R</kbd> | Random station |
+| <kbd>M</kbd> | Mute |
+| <kbd>Shift</kbd> + <kbd>↑</kbd> / <kbd>↓</kbd> | Volume |
+| <kbd>F</kbd> | Favorite current station |
+| <kbd>I</kbd> | Station info |
+| <kbd>E</kbd> | Equalizer |
+| <kbd>S</kbd> | Cycle sleep timer |
+| <kbd>/</kbd> | Search |
 
 ---
 
-## Browse Stations
+## 🚀 Run it yourself
 
-Browse stations by:
+It's a static site, so any web server works:
 
-- Country
-- Genre
-- Search
-- Favorites
+```bash
+git clone https://github.com/coders61/SIGNALFM.git
+cd SIGNALFM
+python3 -m http.server 8000
+```
 
-Station cards include:
+Then open http://localhost:8000.
 
-- Station logo
-- Bitrate
-- Codec
-- Country
-- Tags
-- Live status
+> Opening `index.html` directly (double-click) also works, but the installable-app and offline features need a web server.
 
----
+### Deploy free on GitHub Pages
 
-## Audio Player
-
-Built-in player includes:
-
-- Play
-- Pause
-- Stop
-- Volume control
-- Live indicator
-- Album/station artwork
-- Animated visualizer
-- Equalizer
+1. Push this repo to GitHub.
+2. Go to **Settings → Pages**.
+3. Under **Source**, pick **Deploy from a branch**, then choose `main` and `/ (root)`.
+4. Your radio is live at `https://<your-username>.github.io/SIGNALFM/` within a minute or two.
 
 ---
 
-## Equalizer
+## 📂 Project structure
 
-Powered by the Web Audio API.
+```
+SIGNALFM/
+├── index.html            # page layout
+├── css/style.css         # all styles (dark + light themes)
+├── js/app.js             # all app logic
+├── sw.js                 # service worker (offline app shell)
+├── manifest.webmanifest  # PWA manifest
+├── icons/icon.svg        # app icon
+└── .nojekyll             # serve files as-is on GitHub Pages
+```
 
-Bands:
-
-- Bass
-- Mid
-- Treble
-
-Included presets:
-
-- Flat
-- Bass+
-- Vocal
-- Treble+
+When you change files, bump `VERSION` in `sw.js` so installed copies pick up the update.
 
 ---
 
-## Search
+## 🧠 How it works
 
-Quickly search stations by:
+- **Station directory:** [Radio Browser](https://www.radio-browser.info/), a free, community-maintained API. The app discovers the live API servers and fails over automatically if one is down.
+- **Playback:** each stream is first tried in CORS mode, routed through the Web Audio API, which enables the EQ and real visualizer. If the station doesn't allow that, it falls back to normal playback, so the station still plays.
+- **HTTPS:** browsers block insecure (`http://`) audio on secure sites such as GitHub Pages. With *Secure streams only* on (the default on HTTPS), those stations are hidden so you don't hit dead ends.
+- **Storage:** favorites, history and settings live in your browser's `localStorage`. Nothing is sent anywhere.
 
-- Name
-- Genre
-- City
-
-Results are loaded directly from the Radio Browser API.
-
----
-
-## Favorites
-
-Save stations for quick access during your session.
-
-Future versions may include:
-
-- Local Storage
-- User Accounts
-- Cloud Sync
+### Known limitations
+- **Song titles** (now-playing metadata) can't be read directly from radio streams in a browser without a proxy server.
+- **iPhone/iPad:** *Enhanced audio* is off by default, because Web Audio can stop playback when the screen locks.
 
 ---
 
-# 🎨 Design
+## 🛣 Roadmap
 
-Inspired by:
-
-- Cyberpunk
-- Synthwave
-- Retro radios
-- Glassmorphism
-- Neon interfaces
-- Modern dashboards
-
-Primary colours:
-
-- Cyan
-- Magenta
-- Violet
-- Lime
-- Amber
-- Coral
+- [x] Persistent favorites
+- [x] Recently played
+- [x] Trending & top-voted charts
+- [x] Light theme
+- [x] Installable app (PWA)
+- [x] Sleep timer, 5-band EQ, keyboard shortcuts
+- [ ] Now-playing song titles (optional proxy)
+- [ ] World map browsing
+- [ ] Multi-language UI
+- [ ] Custom stations (add your own stream URL)
+- [ ] Cloud sync
 
 ---
 
-# 📱 Responsive Design
+## 🤝 Contributing
 
-Optimized for:
+Contributions are very welcome: bug reports, feature ideas, translations, and pull requests.
 
-- Desktop
-- Laptop
-- Tablet
-- Mobile
+1. Fork the repo and create a branch: `git checkout -b my-feature`
+2. Make your changes (plain HTML/CSS/JS, no build step)
+3. Test locally with `python3 -m http.server`
+4. Open a pull request describing what you changed
 
-The interface automatically adapts to different screen sizes.
-
----
-
-# ⚡ Performance
-
-Designed to be:
-
-- Lightweight
-- Fast
-- Responsive
-- Framework-free
-
-Performance features include:
-
-- Lazy-loaded station icons
-- Multiple API failover
-- Skeleton loading screens
-- Efficient DOM rendering
-- Minimal network requests
+If you like the project, **give it a ⭐ on GitHub**. It really helps others find it!
 
 ---
 
-# 📂 Project Structure
+## 📜 License
 
-SIGNAL/
+Released into the public domain under [CC0 1.0 Universal](LICENSE). Do whatever you like with it.
 
-├── index.html
+Radio streams and station logos belong to their respective broadcasters.
 
-├── README.md
+## ❤️ Acknowledgements
 
-└── LICENSE
-
----
-
-# 🔧 Installation
-
-Clone the repository
-
-git clone https://github.com/yourusername/signal-fm.git
-
-Open:
-
-index.html
-
-using any modern web browser.
-
-No installation required.
+- [Radio Browser](https://www.radio-browser.info/) and its community
+- [hls.js](https://github.com/video-dev/hls.js) for HLS playback
+- Radio stations worldwide for broadcasting
 
 ---
 
-# 🌐 Browser Support
-
-Works with:
-
-- Google Chrome
-- Microsoft Edge
-- Firefox
-- Safari
-- Brave
-- Opera
-
-Requires support for:
-
-- ES6 JavaScript
-- Fetch API
-- Web Audio API
-
----
-
-# 🛣 Roadmap
-
-Planned features:
-
-- Persistent favorites
-- Recently played stations
-- User accounts
-- Cloud synchronization
-- Song metadata
-- Album artwork
-- World map browsing
-- Trending stations
-- Popularity charts
-- Listening history
-- Multi-language support
-- Light theme
-- Podcast support
-
----
-
-# 🤝 Contributing
-
-Contributions are welcome.
-
-Feel free to submit:
-
-- Bug reports
-- Feature requests
-- Pull requests
-- UI improvements
-
----
-
-# 📜 License
-
-This project is released under the MIT License.
-
----
-
-# ❤️ Acknowledgements
-
-Special thanks to:
-
-- Radio Browser Community
-- Open Source Contributors
-- Radio Station Owners Worldwide
-
----
-
-# 📻 SIGNAL • FM
-
-Tune the World, Live.
-
-"Every station tells a story. Every frequency connects the world."
-
-🌍 📻
+<p align="center"><b>📻 SIGNAL • FM</b> — "Every station tells a story. Every frequency connects the world."</p>
