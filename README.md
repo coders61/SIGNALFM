@@ -1,3 +1,5 @@
+<p align="center"><img src="banner.png" width="100%" alt="SIGNAL•FM banner"></p>
+
 <h1 align="center">📻 SIGNAL • FM</h1>
 
 <p align="center"><b>Tune the World, Live.</b></p>
