@@ -1,9 +1,5 @@
 <p align="center"><img src="banner.png" width="100%" alt="SIGNAL•FM banner"></p>
 
-<h1 align="center">📻 SIGNAL • FM</h1>
-
-<p align="center"><b>Tune the World, Live.</b></p>
-
 <p align="center">
   A free, open-source web radio app. Stream <b>50,000+ live radio stations</b> from <b>200+ countries</b> right in your browser.<br>
   No account, no ads, no tracking. Install it as an app if you like.
@@ -181,6 +177,8 @@ SIGNALFM/
 ├── sw.js                 # service worker (offline app shell)
 ├── manifest.webmanifest  # app name, icon and colors for installing
 ├── icons/icon.svg        # app icon
+├── banner.png            # banner at the top of this README
+├── social-preview.png    # thumbnail for GitHub social preview
 ├── photo.png             # screenshot used in this README
 ├── .nojekyll             # tells GitHub Pages to serve files as-is
 └── LICENSE               # CC0 1.0
